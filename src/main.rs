@@ -1,5 +1,5 @@
 use iced::{
-    Element,
+    Color, Element
 };
 use iced::{
     widget,
@@ -14,6 +14,7 @@ pub fn main() -> iced::Result {
 
 pub struct Library {
     screen: Screen,
+    debug: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -33,22 +34,41 @@ impl Library {
     fn update(&mut self, event: Message) {
         match event {
             Message::DebugToggle => {
+                self.debug = !self.debug
             }
         }
     }
 
     fn view(&self)  -> Element<'_, Message> {
-        let row = widget::row![
-            widget::text!("Welcome to your E-book Library!"),
-            widget::button("-").on_press(Message::DebugToggle),
+
+        let message: Element<_> = widget::row![
+            widget::text!("Welcome to your E-book Library!")
         ]
-            .spacing(10);
-        widget::container(row)
+            .spacing(10).into();
+
+        let button: Element<_> = widget::row![
+            widget::button("-").on_press(Message::DebugToggle)
+        ]
+            .spacing(10).into();
+
+        let col: Element<_> = widget::column![
+            widget::container(message).center_x(iced::Length::Fill),
+            widget::container(button).center_x(iced::Length::Fill)
+        ]
+            .spacing(10).into();
+
+        let wrapper: Element<_> = widget::container(col)
             .center_x(iced::Length::Fill)
             .center_y(iced::Length::Fill)
             .width(iced::Length::Fill)
             .height(iced::Length::Fill)
-            .into()
+            .into();
+
+        if self.debug {
+            wrapper.explain(Color::BLACK)
+        } else {
+            wrapper
+        }
     }
 }
 
@@ -65,6 +85,7 @@ impl Default for Library {
     fn default() -> Self {
         Self {
             screen: Screen::Home,
+            debug: false,
         }
     }
 }

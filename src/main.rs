@@ -5,6 +5,10 @@ use iced::{
     widget,
 };
 
+mod views;
+
+use views::home;
+
 pub fn main() -> iced::Result {
     iced::application(Library::default, Library::update, Library::view)
         .title(Library::title)
@@ -25,7 +29,7 @@ pub enum Message {
 impl Library {
     fn title(&self) -> String {
         let screen = match self.screen {
-            Screen::Home => "Welcome",
+            Screen::Home => "Home",
         };
 
         format!("{screen} - Library")
@@ -41,23 +45,11 @@ impl Library {
 
     fn view(&self)  -> Element<'_, Message> {
 
-        let message: Element<_> = widget::row![
-            widget::text!("Welcome to your E-book Library!")
-        ]
-            .spacing(10).into();
+        let screen = match self.screen {
+            Screen::Home => home::home()
+        };
 
-        let button: Element<_> = widget::row![
-            widget::button("-").on_press(Message::DebugToggle)
-        ]
-            .spacing(10).into();
-
-        let col: Element<_> = widget::column![
-            widget::container(message).center_x(iced::Length::Fill),
-            widget::container(button).center_x(iced::Length::Fill)
-        ]
-            .spacing(10).into();
-
-        let wrapper: Element<_> = widget::container(col)
+        let content: Element<_> = widget::container(screen)
             .center_x(iced::Length::Fill)
             .center_y(iced::Length::Fill)
             .width(iced::Length::Fill)
@@ -65,9 +57,9 @@ impl Library {
             .into();
 
         if self.debug {
-            wrapper.explain(Color::BLACK)
+            content.explain(Color::BLACK)
         } else {
-            wrapper
+            content
         }
     }
 }

@@ -1,13 +1,16 @@
 use iced::{
     Color, Element
 };
+
 use iced::{
     widget,
 };
 
 mod views;
 
-use views::home;
+use views::{
+    home::HomeScreen
+};
 
 pub fn main() -> iced::Result {
     iced::application(Library::default, Library::update, Library::view)
@@ -30,6 +33,8 @@ impl Library {
     fn title(&self) -> String {
         let screen = match self.screen {
             Screen::Home => "Home",
+            Screen::Settings => "Settings",
+            Screen::Book => "Book",
         };
 
         format!("{screen} - Library")
@@ -46,7 +51,9 @@ impl Library {
     fn view(&self)  -> Element<'_, Message> {
 
         let screen = match self.screen {
-            Screen::Home => home::home()
+            Screen::Home => HomeScreen::home(),
+            Screen::Settings => HomeScreen::home(),
+            Screen::Book => HomeScreen::home()
         };
 
         let content: Element<_> = widget::container(screen)
@@ -66,14 +73,16 @@ impl Library {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Screen {
-    Home
+    Home,
+    Settings,
+    Book
 }
 
 impl Screen {
 
 }
 
-impl Default for Library {
+impl Default for Library{
     fn default() -> Self {
         Self {
             screen: Screen::Home,

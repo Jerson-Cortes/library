@@ -3,38 +3,31 @@ use iced::{
     Element, Length,
 };
 
-use crate::Message;
+use crate::{
+    Message
+};
 
-#[derive(Default)]
-pub struct HomeScreen {
+fn welcome_message<'a>() -> Element<'a, Message> {
+    row![text!("Welcome to your E‑book Library!")]
+        .spacing(10)
+        .into()
 }
 
-impl HomeScreen {
+fn debug_button<'a>() -> Element<'a, Message> {
+    row![button("debug").on_press(Message::DebugToggle)]
+        .spacing(10)
+        .into()
+}
 
-    fn welcome_message<'a>() -> Element<'a, Message> {
-        row![text!("Welcome to your E‑book Library!")]
-            .spacing(10)
-            .into()
-    }
+fn main_column<'a>(msg: Element<'a, Message>, btn: Element<'a, Message>) -> Element<'a, Message> {
+    column![
+        container(msg).center_x(Length::Fill),
+        container(btn).center_x(Length::Fill)
+    ]
+        .spacing(10)
+        .into()
+}
 
-    fn debug_button<'a>() -> Element<'a, Message> {
-        row![button("debug").on_press(Message::DebugToggle)]
-            .spacing(10)
-            .into()
-    }
-
-    fn main_column<'a>(msg: Element<'a, Message>, btn: Element<'a, Message>) -> Element<'a, Message> {
-        column![
-            container(msg).center_x(Length::Fill),
-            container(btn).center_x(Length::Fill)
-        ]
-            .spacing(10)
-            .into()
-    }
-
-    pub fn home<'a>() -> Element<'a, Message> {
-        let msg = HomeScreen::welcome_message();
-        let btn = HomeScreen::debug_button();
-        HomeScreen::main_column(msg, btn)
-    }
+pub fn home_screen<'a>() -> Element<'a, Message> {
+    main_column(welcome_message(),debug_button())
 }

@@ -1,15 +1,17 @@
 use iced::{
-    Color, Element
+    Color, Element,
 };
 
 use iced::{
     widget,
+    window::Settings as WindowSettings
 };
 
 mod views;
 
 use views::{
-    home::HomeScreen
+    home::home_screen,
+    settings::settings_screen,
 };
 
 pub fn main() -> iced::Result {
@@ -21,12 +23,14 @@ pub fn main() -> iced::Result {
 
 pub struct Library {
     screen: Screen,
-    debug: bool,
+    debug_toggle: bool,
+    window_settings: WindowSettings,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
-    DebugToggle
+    DebugToggle,
+    DecorationsToggle(bool)
 }
 
 impl Library {
@@ -43,7 +47,10 @@ impl Library {
     fn update(&mut self, event: Message) {
         match event {
             Message::DebugToggle => {
-                self.debug = !self.debug
+                self.debug_toggle = !self.debug_toggle
+            },
+            Message::DecorationsToggle(decoration_toggler) => {
+                // iced::window::toggle_decorations();
             }
         }
     }
@@ -51,9 +58,9 @@ impl Library {
     fn view(&self)  -> Element<'_, Message> {
 
         let screen = match self.screen {
-            Screen::Home => HomeScreen::home(),
-            Screen::Settings => HomeScreen::home(),
-            Screen::Book => HomeScreen::home()
+            Screen::Home => home_screen(),
+            Screen::Settings => settings_screen(self),
+            Screen::Book => home_screen(),
         };
 
         let content: Element<_> = widget::container(screen)
@@ -63,7 +70,7 @@ impl Library {
             .height(iced::Length::Fill)
             .into();
 
-        if self.debug {
+        if self.debug_toggle {
             content.explain(Color::BLACK)
         } else {
             content
@@ -85,8 +92,11 @@ impl Screen {
 impl Default for Library{
     fn default() -> Self {
         Self {
-            screen: Screen::Home,
-            debug: false,
+            screen: Screen::Settings,
+            debug_toggle: false,
+            window_settings: WindowSettings {
+                ..WindowSettings::default()
+            },
         }
     }
 }

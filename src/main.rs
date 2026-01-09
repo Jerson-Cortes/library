@@ -1,5 +1,5 @@
 use iced::{
-    Color, Element,
+    Color, Element, Settings,
 };
 
 use iced::{
@@ -17,6 +17,8 @@ use views::{
 pub fn main() -> iced::Result {
     iced::application(Library::default, Library::update, Library::view)
         .title(Library::title)
+        .settings(Library::default().settings)
+        .window(Library::default().window_settings)
         .centered()
         .run()
 }
@@ -24,6 +26,7 @@ pub fn main() -> iced::Result {
 pub struct Library {
     screen: Screen,
     debug_toggle: bool,
+    settings: Settings,
     window_settings: WindowSettings,
 }
 
@@ -34,6 +37,7 @@ pub enum Message {
 }
 
 impl Library {
+
     fn title(&self) -> String {
         let screen = match self.screen {
             Screen::Home => "Home",
@@ -49,8 +53,8 @@ impl Library {
             Message::DebugToggle => {
                 self.debug_toggle = !self.debug_toggle
             },
-            Message::DecorationsToggle(decoration_toggler) => {
-                // iced::window::toggle_decorations();
+            Message::DecorationsToggle(_decoration_toggler) => {
+                //iced::window::toggle_decorations(iced::window::Id);
             }
         }
     }
@@ -94,7 +98,11 @@ impl Default for Library{
         Self {
             screen: Screen::Settings,
             debug_toggle: false,
+            settings: Settings { 
+                ..Settings::default()
+            },
             window_settings: WindowSettings {
+                decorations: false,
                 ..WindowSettings::default()
             },
         }

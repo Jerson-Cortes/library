@@ -1,7 +1,13 @@
+use iced::widget;
 use iced::{Element, Settings, Task, widget::column};
 
+mod screen;
 mod window;
 
+use crate::screen::home::home_screen;
+use crate::screen::welcome::welcome_screen;
+
+use self::screen::Screen;
 use self::window::LibraryWindow;
 
 pub fn main() -> iced::Result {
@@ -30,9 +36,9 @@ impl Library {
             Self {
                 screen: Screen::Welcome,
                 settings: Settings::default(),
-                main_window
+                main_window,
             },
-            Task::batch(commands)
+            Task::batch(commands),
         )
     }
 
@@ -53,17 +59,21 @@ impl Library {
 
     fn view(&self, id: window::Id) -> Element<'_, Message> {
         if self.main_window.id == id {
-            column!["Detected main window"].into()
+            let screen = match self.screen {
+                Screen::Home => home_screen(),
+                Screen::Welcome => welcome_screen(),
+            };
+
+            let content: Element<_> = widget::container(screen)
+                .center_x(iced::Length::Fill)
+                .center_y(iced::Length::Fill)
+                .width(iced::Length::Fill)
+                .height(iced::Length::Fill)
+                .into();
+
+            content
         } else {
             column![].into()
         }
     }
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Screen {
-    Welcome,
-    Home,
-}
-
-impl Screen {}

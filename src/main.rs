@@ -1,8 +1,8 @@
-use iced::{
-    Element, Settings, Task,
-    widget::column,
-    window::{self, Settings as WindowSettings},
-};
+use iced::{Element, Settings, Task, widget::column};
+
+mod window;
+
+use self::window::LibraryWindow;
 
 pub fn main() -> iced::Result {
     iced::daemon(Library::new, Library::update, Library::view)
@@ -12,9 +12,8 @@ pub fn main() -> iced::Result {
 
 pub struct Library {
     screen: Screen,
-    debug_toggle: bool,
     settings: Settings,
-    window_settings: WindowSettings,
+    main_window: LibraryWindow,
 }
 
 #[derive(Debug, Clone)]
@@ -24,7 +23,17 @@ pub enum Message {
 
 impl Library {
     fn new() -> (Self, Task<Message>) {
-        (Library::default(), Task::none())
+        let (main_window_id, open_main_window) = window::open(window::Settings::default());
+        let main_window = LibraryWindow::new(main_window_id);
+        let commands = vec![open_main_window.then(|_| Task::none())];
+        (
+            Self {
+                screen: Screen::Welcome,
+                settings: Settings::default(),
+                main_window
+            },
+            Task::batch(commands)
+        )
     }
 
     fn title(&self, _window_id: window::Id) -> String {
@@ -43,7 +52,11 @@ impl Library {
     }
 
     fn view(&self, id: window::Id) -> Element<'_, Message> {
-        column![].into()
+        if self.main_window.id == id {
+            column!["Detected main window"].into()
+        } else {
+            column![].into()
+        }
     }
 }
 
@@ -54,19 +67,3 @@ enum Screen {
 }
 
 impl Screen {}
-
-impl Default for Library {
-    fn default() -> Self {
-        Self {
-            screen: Screen::Welcome,
-            debug_toggle: false,
-            settings: Settings {
-                ..Settings::default()
-            },
-            window_settings: WindowSettings {
-                decorations: false,
-                ..WindowSettings::default()
-            },
-        }
-    }
-}

@@ -5,7 +5,6 @@ mod screen;
 mod window;
 
 use crate::screen::home::home_screen;
-use crate::screen::welcome::welcome_screen;
 
 use self::screen::Screen;
 use self::window::LibraryWindow;
@@ -34,7 +33,7 @@ impl Library {
         let commands = vec![open_main_window.then(|_| Task::none())];
         (
             Self {
-                screen: Screen::Welcome,
+                screen: Screen::Home,
                 settings: Settings::default(),
                 main_window,
             },
@@ -44,7 +43,6 @@ impl Library {
 
     fn title(&self, _window_id: window::Id) -> String {
         let screen = match self.screen {
-            Screen::Welcome => "Welcome",
             Screen::Home => "Home",
         };
 
@@ -61,7 +59,6 @@ impl Library {
         if self.main_window.id == id {
             let screen = match self.screen {
                 Screen::Home => home_screen(),
-                Screen::Welcome => welcome_screen(),
             };
 
             let content: Element<_> = widget::container(screen)

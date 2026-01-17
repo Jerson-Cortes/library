@@ -1,4 +1,4 @@
-use iced::widget;
+use iced::{Subscription, event, exit, widget};
 use iced::{Element, Settings, Task, widget::column};
 
 mod screen;
@@ -12,6 +12,7 @@ use self::window::LibraryWindow;
 pub fn main() -> iced::Result {
     iced::daemon(Library::new, Library::update, Library::view)
         .title(Library::title)
+        .subscription(Library::subscription)
         .run()
 }
 
@@ -24,20 +25,21 @@ pub struct Library {
 #[derive(Debug, Clone)]
 pub enum Message {
     ShowWindow,
+    Exit,
 }
 
 impl Library {
     fn new() -> (Self, Task<Message>) {
         let (main_window_id, open_main_window) = window::open(window::Settings::default());
         let main_window = LibraryWindow::new(main_window_id);
-        let commands = vec![open_main_window.then(|_| Task::none())];
+        let tasks = vec![open_main_window.then(|_| Task::none())];
         (
             Self {
                 screen: Screen::Home,
                 settings: Settings::default(),
                 main_window,
             },
-            Task::batch(commands),
+            Task::batch(tasks),
         )
     }
 
@@ -51,6 +53,7 @@ impl Library {
 
     fn update(&mut self, event: Message) -> Task<Message> {
         match event {
+            Message::Exit => exit(),
             _ => Task::none(),
         }
     }
@@ -72,5 +75,9 @@ impl Library {
         } else {
             column![].into()
         }
+    }
+
+    fn subscription(&self) -> Subscription<Message> {
+        Subscription::none()
     }
 }

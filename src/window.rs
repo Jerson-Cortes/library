@@ -1,4 +1,4 @@
-pub use iced::window::{Id, Settings, open};
+pub use iced::window::{Event, Id, Settings, events, open};
 
 #[derive(Debug)]
 pub struct LibraryWindow {

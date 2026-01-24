@@ -1,5 +1,5 @@
-use iced::{Subscription, event, exit, widget};
 use iced::{Element, Settings, Task, widget::column};
+use iced::{Subscription, exit, widget};
 
 mod screen;
 mod window;
@@ -25,6 +25,7 @@ pub struct Library {
 #[derive(Debug, Clone)]
 pub enum Message {
     ShowWindow,
+    WindowEvent(window::Id, window::Event),
     Exit,
 }
 
@@ -53,6 +54,14 @@ impl Library {
 
     fn update(&mut self, event: Message) -> Task<Message> {
         match event {
+            Message::WindowEvent(id, event) => match event {
+                window::Event::Opened { position, size } => Task::none(),
+                window::Event::Closed => exit(),
+                window::Event::Resized(size) => Task::none(),
+                window::Event::Focused => Task::none(),
+                window::Event::Unfocused => Task::none(),
+                _ => Task::none(),
+            },
             Message::Exit => exit(),
             _ => Task::none(),
         }
@@ -78,6 +87,6 @@ impl Library {
     }
 
     fn subscription(&self) -> Subscription<Message> {
-        Subscription::none()
+        window::events().map(|(window, event)| Message::WindowEvent(window, event))
     }
 }

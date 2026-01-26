@@ -1,6 +1,6 @@
-use iced::{Element, Settings, Task, widget::column};
-use iced::{Subscription, exit, widget};
+use iced::{Element, Settings, Subscription, Task, exit, widget};
 
+mod components;
 mod screen;
 mod window;
 
@@ -26,6 +26,7 @@ pub struct Library {
 pub enum Message {
     ShowWindow,
     WindowEvent(window::Id, window::Event),
+    ButtonHome,
     Exit,
 }
 
@@ -62,6 +63,7 @@ impl Library {
                 window::Event::Unfocused => Task::none(),
                 _ => Task::none(),
             },
+            Message::ButtonHome => Task::none(),
             Message::Exit => exit(),
             _ => Task::none(),
         }
@@ -82,7 +84,7 @@ impl Library {
 
             content
         } else {
-            column![].into()
+            widget::column![].into()
         }
     }
 
